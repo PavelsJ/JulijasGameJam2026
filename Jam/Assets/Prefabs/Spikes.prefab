@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 9036314837745573794}
   - component: {fileID: 4138298332548601948}
   - component: {fileID: 1866288540278325609}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Spikes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7106274454517776459}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -194,19 +194,7 @@ MonoBehaviour:
         m_CallState: 2
   offSpike:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1866288540278325609}
-        m_TargetAssemblyTypeName: EntityMotion, Assembly-CSharp
-        m_MethodName: StartMove
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
   zapEffect: {fileID: 4523719213380429502}
   shakeDuration: 0.5
   shakeStrength: 0.08

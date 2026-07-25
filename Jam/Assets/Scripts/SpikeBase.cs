@@ -23,7 +23,6 @@ public class SpikeBase : MonoBehaviour
     
     private void Awake()
     {
-        defaultPosition = transform.localPosition;
         defaultScale = transform.localScale;
     }
     
@@ -51,6 +50,8 @@ public class SpikeBase : MonoBehaviour
     private IEnumerator HitFeedback()
     {
         onSpike.Invoke();
+        
+        defaultPosition = transform.localPosition;
         transform.localScale = defaultScale * scaleMultiplier;
 
         float timer = 0f;

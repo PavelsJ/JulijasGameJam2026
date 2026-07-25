@@ -62,12 +62,14 @@ public class PlayerMovement : MonoBehaviour
     private float footstepInterval = 0.5f;
 
     private PlayerBase playerBase;
+    private PlatformMotion currentPlatform;
     
     private Coroutine knockbackRoutine;
     private Coroutine invulnerabilityRoutine;
 
     private Rigidbody2D rb;
     private Camera camera;
+    
 
     private void Start()
     {
@@ -418,8 +420,23 @@ public class PlayerMovement : MonoBehaviour
         if (normal.y > 0.5f) return;
         float boost = rb.linearVelocity.magnitude * wallBounceBoost;
         rb.AddForce(normal * boost, ForceMode2D.Impulse);
+        
+        PlatformMotion platform = collision.gameObject.GetComponent<PlatformMotion>();
+
+        if (platform != null)
+        {
+            currentPlatform = platform;
+        }
     }
-    
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.GetComponent<PlatformMotion>() != null)
+        {
+            currentPlatform = null;
+        }
+    }
+
     private void OnDrawGizmos()
     {
         if (playerBase == null || !playerBase.isActive) return;
