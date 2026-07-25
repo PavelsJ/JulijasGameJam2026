@@ -3,19 +3,18 @@ using UnityEngine;
 
 public class PlayerVisual : MonoBehaviour
 {
-    [Header("Player Trail")]
-    public TrailRenderer trail;
+    [Header("Player Sprite")]
+    [SerializeField] private SpriteRenderer sprite;
     
     [Header("Player Particles")]
-    public PlayerParticles particles;
+    [SerializeField] private PlayerParticles particles;
     
     [Header("Player Material Effects")]
-    public float flashTime = 1f;
-    public AnimationCurve flashCurve;
+    [SerializeField] private float flashTime = 1f;
+    [SerializeField] private AnimationCurve flashCurve;
     
     private PlayerBase playerBase;
     
-    private SpriteRenderer sprite;
     private Animator animator;
     private Material material;
 
@@ -23,7 +22,6 @@ public class PlayerVisual : MonoBehaviour
     {
         playerBase = player;
         
-        sprite = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         
         material = new Material(sprite.material);
@@ -52,7 +50,6 @@ public class PlayerVisual : MonoBehaviour
     public void ChangeState(Vector2 position, bool state)
     {
         animator.SetBool("IsBall", state);
-        sprite.color = state ? Color.green : Color.red;
         particles.PlaySwapParticles(position);
     }
 

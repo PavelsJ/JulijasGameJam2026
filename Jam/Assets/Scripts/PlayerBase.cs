@@ -11,6 +11,7 @@ public class PlayerBase : MonoBehaviour
     
     public PlayerMovement Movement { get; private set; }
     public PlayerVisual Visual { get; private set; }
+    public PlayerAction Action { get; private set; }
     
     private Coroutine playerCoroutine;
 
@@ -18,15 +19,21 @@ public class PlayerBase : MonoBehaviour
     {
         Movement = GetComponent<PlayerMovement>();
         Visual = GetComponent<PlayerVisual>();
+        Action = GetComponent<PlayerAction>();
         
         Movement.Init(this);
         Visual.Init(this);
+        Action.Init(this);
     }
     
     private void Update()
     {
         if (isActive && !isDead)
+        {
             Movement.TickUpdate();
+            Action.TickUpdate();
+        }
+           
     }
 
     private void FixedUpdate()
@@ -73,7 +80,7 @@ public class PlayerBase : MonoBehaviour
         isDead = true;
         isActive = false;
         
-        Movement.Stop();
+        SceneLoadManager.Instance.OpenReloadHint();
     }
     
     private void HandleFinish()

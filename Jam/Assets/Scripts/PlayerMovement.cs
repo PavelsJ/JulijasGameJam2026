@@ -8,8 +8,6 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
-    [SerializeField] private float acceleration = 20f;
-    [SerializeField] private float deceleration = 30f;
 
     [Header("Ball")]
     [SerializeField] private float launchForce = 15f;
@@ -95,15 +93,17 @@ public class PlayerMovement : MonoBehaviour
             {
                 ToggleBallMode();
             }
-            
-            if (isBall)
-            {
-                HandleBall();
-            }
-            else
-            {
-                HandleMovement();
-            }
+        }
+        
+        if (isBall)
+        {
+            HandleBall();
+            playerBase.Action.ShowAction();
+        }
+        else
+        {
+            HandleMovement();
+            playerBase.Action.HideAction();
         }
         
         // HandleLanding();
@@ -175,12 +175,20 @@ public class PlayerMovement : MonoBehaviour
     
     private IEnumerator SoftlockCheckRoutine()
     {
-        yield return new WaitForSeconds(softlockCheckInterval);
-        
-        if (rb.linearVelocity.magnitude > 0.1f && isGrounded)
+        Vector2 startPos = transform.position;
+
+        while (isLocked)
         {
-            isLocked = false;
-            SceneLoadManager.Instance.CloseReloadHint();
+            yield return new WaitForSeconds(softlockCheckInterval);
+
+            if (Vector2.Distance(startPos, transform.position) >= 0.2f && isGrounded)
+            {
+                isLocked = false;
+                SceneLoadManager.Instance.CloseReloadHint();
+                yield break;
+            }
+
+            startPos = transform.position;
         }
     }
     
@@ -188,6 +196,7 @@ public class PlayerMovement : MonoBehaviour
     {
         isBall = !isBall;
         isLaunched = false;
+        isCharging = false;
         
         ManageBallCompounds(isBall);
     }
@@ -198,6 +207,7 @@ public class PlayerMovement : MonoBehaviour
         
         isBall = false;
         isLaunched = false;
+        isCharging = false;
         
         ManageBallCompounds(isBall);
     }
@@ -208,6 +218,12 @@ public class PlayerMovement : MonoBehaviour
         
         if (Input.GetMouseButtonDown(0))
         {
+            if (!isGrounded)
+            {
+                playerBase.Action.WrongAction();
+                return;
+            }
+            
             isCharging = true;
             
             dragStart = camera.ScreenToWorldPoint(Input.mousePosition);
@@ -218,10 +234,14 @@ public class PlayerMovement : MonoBehaviour
         if (isCharging)
         {
             dragCurrent = camera.ScreenToWorldPoint(Input.mousePosition);
-
+            
+            playerBase.Action.UpdateAim(transform.position,
+                dragStart, dragCurrent, maxDragDistance);
+            
             if (Input.GetMouseButtonUp(0))
             {
                 Launch();
+                playerBase.Action.HideAction();
             }
         }
         
@@ -267,6 +287,7 @@ public class PlayerMovement : MonoBehaviour
     
     private void HandleMovement()
     {
+        if(!isGrounded) return;
         float direction = Input.GetAxisRaw("Horizontal");
         
         Move(direction);
@@ -275,10 +296,10 @@ public class PlayerMovement : MonoBehaviour
     private void Move(float direction)
     {
         float targetSpeed = direction * moveSpeed;
-        float speedChange = direction != 0 ? acceleration : deceleration;
+        rb.linearVelocity = new Vector2(targetSpeed, rb.linearVelocity.y);
         
-        float newSpeed = Mathf.MoveTowards(rb.linearVelocity.x, targetSpeed, speedChange * Time.fixedDeltaTime);
-        rb.linearVelocity = new Vector2(newSpeed, rb.linearVelocity.y);
+        // float newSpeed = Mathf.MoveTowards(rb.linearVelocity.x, targetSpeed, speedChange * Time.fixedDeltaTime);
+        // rb.linearVelocity = new Vector2(newSpeed, rb.linearVelocity.y);
 
         if (direction != 0)
         {
@@ -317,15 +338,12 @@ public class PlayerMovement : MonoBehaviour
     
     private IEnumerator ApplyKnockbackRoutine(Vector2 hitDirection, float knockbackMultiplier)
     {
-        Stop();
         isKnockbacked = true;
         
         rb.AddForce(hitDirection.normalized * (knockbackForce * knockbackMultiplier), ForceMode2D.Impulse);
         
         yield return new WaitForSeconds(0.2f);
         yield return new WaitUntil(() => isGrounded);
-        
-        Stop();
        
         isKnockbacked = false;
     }
