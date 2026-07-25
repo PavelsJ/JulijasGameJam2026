@@ -16,9 +16,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float wallImpactVelocity = 3f;
     [SerializeField] private float wallBounceBoost = 2f;
 
-    public bool isBall;
-    public bool isCharging;
-    public bool isLaunched;
+    [SerializeField] private bool isBall;
+    [SerializeField] private bool isCharging;
+    [SerializeField] private bool isLaunched;
+    private bool canExitBall;
     
     private Vector2 lastCollisionNormal;
     
@@ -86,12 +87,16 @@ public class PlayerMovement : MonoBehaviour
     {
         UpdateGroundCheck();
         
-        if (isGrounded)
+        if (Input.GetKeyDown(KeyCode.X) || Input.GetMouseButtonDown(1))
         {
-            if (Input.GetKeyDown(KeyCode.X) 
-                || Input.GetMouseButtonDown(1))
+            if (isGrounded)
             {
                 ToggleBallMode();
+            }
+            else if (isBall && canExitBall)
+            {
+                canExitBall = false;
+                ExitBallMode();
             }
         }
         
@@ -119,6 +124,13 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector2 checkPosition = (Vector2)transform.position + Vector2.down * groundCheckOffset;
         isGrounded = Physics2D.OverlapCircle(checkPosition, groundCheckRadius, groundLayer);
+        
+        if (!wasGrounded && isGrounded)
+        {
+            canExitBall = true;
+        }
+
+        wasGrounded = isGrounded;
     }
     
     private void CheckAirTime()
@@ -195,8 +207,22 @@ public class PlayerMovement : MonoBehaviour
     private void ToggleBallMode()
     {
         isBall = !isBall;
+        
         isLaunched = false;
         isCharging = false;
+        
+        ManageBallCompounds(isBall);
+    }
+
+    private void EnterBallMode()
+    {
+        if (isBall) return;
+            
+        isBall = true;
+        isLaunched = false;
+        isCharging = false;
+
+        canExitBall = true;
         
         ManageBallCompounds(isBall);
     }
