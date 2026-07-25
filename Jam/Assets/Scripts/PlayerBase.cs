@@ -60,6 +60,13 @@ public class PlayerBase : MonoBehaviour
         
         HandleDefeat();
     }
+
+    public void HandleBoost(Vector2 hitDirection, float knockbackMultiplier = 1)
+    {
+        if (isDead) return;
+        
+        Movement.ApplyBoost(hitDirection, knockbackMultiplier);
+    }
     
     public void HandleDefeat()
     {

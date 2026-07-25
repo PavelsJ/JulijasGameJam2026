@@ -7,7 +7,7 @@ public class PlayerVisual : MonoBehaviour
     public TrailRenderer trail;
     
     [Header("Player Particles")]
-    public ParticleSystem particles;
+    public PlayerParticles particles;
     
     [Header("Player Material Effects")]
     public float flashTime = 1f;
@@ -32,8 +32,7 @@ public class PlayerVisual : MonoBehaviour
 
     public void PlayHit()
     {
-        // particles.PlayHitParticles();
-        
+        particles.PlayHitParticles(transform.position);
         StartCoroutine(FlashCoroutine());
     }
 
@@ -50,10 +49,11 @@ public class PlayerVisual : MonoBehaviour
         }
     }
 
-    public void ChangeState(bool state)
+    public void ChangeState(Vector2 position, bool state)
     {
         animator.SetBool("IsBall", state);
         sprite.color = state ? Color.green : Color.red;
+        particles.PlaySwapParticles(position);
     }
 
     public void PlayDeath(bool isDead)
@@ -61,9 +61,16 @@ public class PlayerVisual : MonoBehaviour
         animator.SetBool("IsDead", isDead);
     }
 
-    public void PlayJump(bool jump)
+    public void PlayJump(Vector2 position, bool jump)
     {
         animator.SetBool("Jump", jump);
+        particles.PlayJumpParticles();
+    }
+
+    public void PlayLand(Vector2 position, Vector2 normal)
+    {
+        float angle = Mathf.Atan2(normal.y, normal.x) * Mathf.Rad2Deg;
+        particles.PlayLandingParticles(position, Quaternion.Euler(0, 0, angle));
     }
     
     public void PlayMovement(float direction)

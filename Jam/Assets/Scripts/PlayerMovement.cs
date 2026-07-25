@@ -8,20 +8,26 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
+    [SerializeField] private float acceleration = 20f;
+    [SerializeField] private float deceleration = 30f;
 
     [Header("Ball")]
     [SerializeField] private float launchForce = 15f;
     [SerializeField] private float maxDragDistance = 4f;
     [SerializeField] private float stopVelocity = 0.3f;
+    [SerializeField] private float wallImpactVelocity = 3f;
+    [SerializeField] private float wallBounceBoost = 2f;
 
     public bool isBall;
     public bool isCharging;
     public bool isLaunched;
     
+    private Vector2 lastCollisionNormal;
+    
     private Vector2 dragStart;
     private Vector2 dragCurrent;
     
-    [Header("Physics Settings")]
+    [Header("Torque")]
     [SerializeField] private float randomTorqueMin = -0.2f; 
     [SerializeField] private float randomTorqueMax = 0.2f;  
 
@@ -41,10 +47,15 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded;
     private bool wasGrounded;
     
+    [Header("Softlock")]
     private float timeSinceLastJump = 0f;
     private float timeSinceLastMove = 0f;
     private const float maxLockTime = 10f;
     private Vector2 lastPosition;
+    private bool isLocked = false;
+    
+    private Coroutine softlockRoutine;
+    private float softlockCheckInterval = 2f;
     
     private float defaultGravity;
     
@@ -79,7 +90,8 @@ public class PlayerMovement : MonoBehaviour
         
         if (isGrounded)
         {
-            if (Input.GetKeyDown(KeyCode.X))
+            if (Input.GetKeyDown(KeyCode.X) 
+                || Input.GetMouseButtonDown(1))
             {
                 ToggleBallMode();
             }
@@ -94,13 +106,13 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         
-        HandleLanding();
+        // HandleLanding();
     }
 
     public void TickFixedUpdate()
     {
         CheckAirTime();
-        CheckIdleTime(); 
+        CheckIdleTime();
     }
     
     private void UpdateGroundCheck()
@@ -111,6 +123,8 @@ public class PlayerMovement : MonoBehaviour
     
     private void CheckAirTime()
     {
+        if (isLocked) return;
+        
         if (isGrounded)
         {
             timeSinceLastJump = 0f;
@@ -120,13 +134,21 @@ public class PlayerMovement : MonoBehaviour
             timeSinceLastJump += Time.fixedDeltaTime;
             if (timeSinceLastJump >= maxLockTime)
             {
-                playerBase.HandleDefeat();
+                SceneLoadManager.Instance.OpenReloadHint();
+                isLocked = true;
+                
+                if (softlockRoutine != null)
+                    StopCoroutine(softlockRoutine);
+
+                softlockRoutine = StartCoroutine(SoftlockCheckRoutine());
             }
         }
     }
     
     private void CheckIdleTime()
     {
+        if (isLocked) return;
+        
         Vector2 currentPos = transform.position;
     
         if (Vector2.Distance(currentPos, lastPosition) < 0.01f)
@@ -134,7 +156,13 @@ public class PlayerMovement : MonoBehaviour
             timeSinceLastMove += Time.fixedDeltaTime;
             if (timeSinceLastMove >= maxLockTime)
             {
-                playerBase.HandleDefeat();
+                SceneLoadManager.Instance.OpenReloadHint();
+                isLocked = true;
+                
+                if (softlockRoutine != null)
+                    StopCoroutine(softlockRoutine);
+
+                softlockRoutine = StartCoroutine(SoftlockCheckRoutine());
             }
         }
         else
@@ -145,9 +173,22 @@ public class PlayerMovement : MonoBehaviour
         lastPosition = currentPos;
     }
     
+    private IEnumerator SoftlockCheckRoutine()
+    {
+        yield return new WaitForSeconds(softlockCheckInterval);
+        
+        if (rb.linearVelocity.magnitude > 0.1f && isGrounded)
+        {
+            isLocked = false;
+            SceneLoadManager.Instance.CloseReloadHint();
+        }
+    }
+    
     private void ToggleBallMode()
     {
         isBall = !isBall;
+        isLaunched = false;
+        
         ManageBallCompounds(isBall);
     }
     
@@ -199,7 +240,7 @@ public class PlayerMovement : MonoBehaviour
         isLaunched = true;
         
         footstepTimer = footstepInterval;
-        playerBase.Visual.PlayJump(true);
+        playerBase.Visual.PlayJump(transform.position, true);
 
         Vector2 drag = dragStart - dragCurrent;
         drag = Vector2.ClampMagnitude(drag, maxDragDistance);
@@ -219,7 +260,7 @@ public class PlayerMovement : MonoBehaviour
         playerCollider[0].enabled = !state;
         playerCollider[1].enabled = state;
         
-        playerBase.Visual.ChangeState(state);
+        playerBase.Visual.ChangeState(transform.position, state);
         
         Stop();
     }
@@ -233,21 +274,33 @@ public class PlayerMovement : MonoBehaviour
     
     private void Move(float direction)
     {
-        rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
+        float targetSpeed = direction * moveSpeed;
+        float speedChange = direction != 0 ? acceleration : deceleration;
         
+        float newSpeed = Mathf.MoveTowards(rb.linearVelocity.x, targetSpeed, speedChange * Time.fixedDeltaTime);
+        rb.linearVelocity = new Vector2(newSpeed, rb.linearVelocity.y);
+
         if (direction != 0)
         {
             playerBase.Visual.Flip(direction);
             playerBase.Visual.PlayMovement(direction);
-            
+
             FootSteps();
         }
     }
     
-    private void HandleLanding()
+    // private void HandleLanding()
+    // {
+    //     if (wasGrounded || !isGrounded) return;
+    //     
+    //     playerBase.Visual.PlayLand();
+    //     playerBase.Visual.PlayJump(false);
+    // }
+
+    public void ApplyBoost(Vector2 hitDirection, float knockbackMultiplier = 1)
     {
-        if (wasGrounded || !isGrounded) return;
-        playerBase.Visual.PlayJump(false);
+        if (knockbackRoutine != null) StopCoroutine(knockbackRoutine);
+        knockbackRoutine = StartCoroutine(ApplyKnockbackRoutine(hitDirection, knockbackMultiplier));
     }
     
     public void ApplyKnockback(Vector2 hitDirection, float knockbackMultiplier = 1)
@@ -280,9 +333,7 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator InvulnerabilityRoutine(float duration)
     {
         playerBase.isInvulnerable = true;
-        
         yield return new WaitForSeconds(duration);
-        
         playerBase.isInvulnerable = false;
     }
     
@@ -309,9 +360,28 @@ public class PlayerMovement : MonoBehaviour
         }
     }
     
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!isBall) return;
+
+        if (rb.linearVelocity.magnitude < wallImpactVelocity) return;
+
+        ContactPoint2D contact = collision.GetContact(0);
+        Vector2 normal = contact.normal;
+
+        playerBase.Visual.PlayLand(contact.point, normal);
+        
+        if (normal.y > 0.5f) return;
+        float boost = rb.linearVelocity.magnitude * wallBounceBoost;
+        rb.AddForce(normal * boost, ForceMode2D.Impulse);
+    }
+    
     private void OnDrawGizmos()
     {
         if (playerBase == null || !playerBase.isActive) return;
         if (!Application.isPlaying) return; 
+        
+        Vector2 checkPosition = (Vector2)transform.position + Vector2.down * groundCheckOffset;
+        Gizmos.DrawWireSphere(checkPosition, groundCheckRadius);
     }
 }
