@@ -3,6 +3,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    public PlayerBase playerBase;
     
     private void Awake()
     {
@@ -19,10 +20,13 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Time.timeScale = 1;
+        Physics2D.gravity = new Vector2(0, -9.81f);
     }
-    
-    private void Update()
+
+    public void ChangeGravity(Vector2 direction)
     {
-        
-    }   
+        Physics2D.gravity = direction.normalized * 9.81f;
+        playerBase.Movement.ChangeGravity(direction);
+        CameraManager.instance.RotateToGravity(-direction);
+    }
 }

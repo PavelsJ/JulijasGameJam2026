@@ -56,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
     private Coroutine softlockRoutine;
     private float softlockCheckInterval = 2f;
     
-    private float defaultGravity;
+    private Vector2 gravityDirection = Vector2.down;
     
     private float footstepTimer;
     private float footstepInterval = 0.5f;
@@ -82,7 +82,6 @@ public class PlayerMovement : MonoBehaviour
         playerBase = player;
         
         rb = GetComponent<Rigidbody2D>();
-        defaultGravity = rb.gravityScale;
     }
 
     public void TickUpdate()
@@ -113,7 +112,7 @@ public class PlayerMovement : MonoBehaviour
             playerBase.Action.HideAction();
         }
         
-        // HandleLanding();
+        //HandleLanding();
     }
 
     public void TickFixedUpdate()
@@ -124,7 +123,7 @@ public class PlayerMovement : MonoBehaviour
     
     private void UpdateGroundCheck()
     {
-        Vector2 checkPosition = (Vector2)transform.position + Vector2.down * groundCheckOffset;
+        Vector2 checkPosition = (Vector2)transform.position + gravityDirection * groundCheckOffset;
         isGrounded = Physics2D.OverlapCircle(checkPosition, groundCheckRadius, groundLayer);
         
         if (!wasGrounded && isGrounded)
@@ -303,7 +302,8 @@ public class PlayerMovement : MonoBehaviour
         if (playerCollider.Length == 0) return;
         
         rb.freezeRotation = !state;
-        if (!state) transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        float angle = Vector2.SignedAngle(Vector2.down, gravityDirection);
+        if (!state) transform.rotation = Quaternion.Euler(0f, 0f, angle);
         
         playerCollider[0].enabled = !state;
         playerCollider[1].enabled = state;
@@ -324,7 +324,8 @@ public class PlayerMovement : MonoBehaviour
     private void Move(float direction)
     {
         float targetSpeed = direction * moveSpeed;
-        rb.linearVelocity = new Vector2(targetSpeed, rb.linearVelocity.y);
+        Vector2 right = Vector2.Perpendicular(gravityDirection);
+        rb.linearVelocity = right * targetSpeed + gravityDirection * Vector2.Dot(rb.linearVelocity, gravityDirection);
         
         // float newSpeed = Mathf.MoveTowards(rb.linearVelocity.x, targetSpeed, speedChange * Time.fixedDeltaTime);
         // rb.linearVelocity = new Vector2(newSpeed, rb.linearVelocity.y);
@@ -440,9 +441,19 @@ public class PlayerMovement : MonoBehaviour
     private void OnDrawGizmos()
     {
         if (playerBase == null || !playerBase.isActive) return;
-        if (!Application.isPlaying) return; 
-        
-        Vector2 checkPosition = (Vector2)transform.position + Vector2.down * groundCheckOffset;
+        if (!Application.isPlaying) return;
+
+        Vector2 checkPosition = (Vector2)transform.position + gravityDirection * groundCheckOffset;
         Gizmos.DrawWireSphere(checkPosition, groundCheckRadius);
+    }
+    
+    
+    public void ChangeGravity(Vector2 direction)
+    {
+        gravityDirection = direction.normalized;
+        transform.up = -gravityDirection;
+        
+        float angle = Vector2.SignedAngle(Vector2.down, gravityDirection);
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 }
