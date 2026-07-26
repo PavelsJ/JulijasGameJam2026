@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6265933067547297089}
   m_Layer: 0
-  m_Name: Spikes_Moving-Parent
+  m_Name: Medusa_Moving-Parent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4381794768686182379}
   - component: {fileID: 4388808382185655571}
   - component: {fileID: 4142845040136043630}
-  - component: {fileID: 2470300941863297657}
+  - component: {fileID: 1525331997970749710}
   m_Layer: 6
   m_Name: SAFE
   m_TagString: Untagged
@@ -133,9 +133,9 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 10.38, y: 10.7}
+  m_Size: {x: 9, y: 10}
   m_EdgeRadius: 0
---- !u!114 &2470300941863297657
+--- !u!114 &1525331997970749710
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -144,7 +144,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8945067116983456452}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a912e235a455d748b6fd6019d2f4206, type: 3}
+  m_Script: {fileID: 11500000, guid: 6ba45145b4d2ab0459a11565c5830ad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 35
+  amplitude: 0.1
+  cycleDuration: 4
+  rotateSpeed: 4
+  isMoving: 0
+  isRotating: 1

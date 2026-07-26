@@ -27,6 +27,6 @@ public class GameManager : MonoBehaviour
     {
         Physics2D.gravity = direction.normalized * 9.81f;
         playerBase.Movement.ChangeGravity(direction);
-        CameraManager.instance.RotateToGravity(-direction);
+        // CameraManager.instance.RotateToGravity(-direction);
     }
 }

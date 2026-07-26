@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3091625792067135690}
   - component: {fileID: 5079614258803968881}
-  - component: {fileID: 8340450076534788898}
+  - component: {fileID: 4022941600454966492}
   m_Layer: 6
   m_Name: DOUBLEMETAL
   m_TagString: Untagged
@@ -88,8 +88,8 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &8340450076534788898
-BoxCollider2D:
+--- !u!60 &4022941600454966492
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -132,5 +132,10 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 23.6, y: 3.3616335}
-  m_EdgeRadius: 0
+  m_Points:
+    m_Paths:
+    - - {x: 8.409119, y: -1.6708107}
+      - {x: -8.387009, y: -1.6646767}
+      - {x: -11.533154, y: 1.6773767}
+      - {x: 11.595963, y: 1.6901284}
+  m_UseDelaunayMesh: 0
