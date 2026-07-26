@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1538068774674149537}
   - component: {fileID: 9036314837745573794}
   - component: {fileID: 4138298332548601948}
+  - component: {fileID: 2005986047722437339}
   m_Layer: 0
   m_Name: Spikes
   m_TagString: Untagged
@@ -186,6 +187,23 @@ MonoBehaviour:
   shakeDuration: 0.5
   shakeStrength: 0.08
   scaleMultiplier: 1.1
+--- !u!114 &2005986047722437339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7106274454517776459}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ba45145b4d2ab0459a11565c5830ad3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amplitude: 0.1
+  cycleDuration: 4
+  rotateSpeed: 4
+  isMoving: 1
+  isRotating: 0
 --- !u!1001 &7396001400596460189
 PrefabInstance:
   m_ObjectHideFlags: 0
