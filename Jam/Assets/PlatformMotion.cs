@@ -42,7 +42,7 @@ public class PlatformMotion : MonoBehaviour
     {
         Vector2 direction = ((Vector2)points[pointIndex].position - (Vector2)transform.position).normalized;
 
-        Flip(direction.x);
+        // Flip(direction.x);
 
         float offset = Mathf.Abs(Vector2.Dot(platformCollider.bounds.extents, direction));
 
