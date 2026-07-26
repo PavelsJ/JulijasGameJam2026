@@ -10,7 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7584910644919822400}
   - component: {fileID: 2885446127744269505}
-  - component: {fileID: 6281122082786881932}
+  - component: {fileID: 6449168854617958766}
+  - component: {fileID: 4472094633724685386}
+  - component: {fileID: 7933800945820464039}
   m_Layer: 6
   m_Name: METEOR1
   m_TagString: Untagged
@@ -88,8 +90,52 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!68 &6281122082786881932
-EdgeCollider2D:
+--- !u!114 &6449168854617958766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402581868517029019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ba45145b4d2ab0459a11565c5830ad3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amplitude: 0.1
+  cycleDuration: 4
+  rotateSpeed: 4
+  isMoving: 1
+  isRotating: 0
+--- !u!50 &4472094633724685386
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8402581868517029019}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
+--- !u!60 &7933800945820464039
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -123,13 +169,24 @@ EdgeCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_EdgeRadius: 0
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 18.792107, y: 6.23}
+    newSize: {x: 18.792107, y: 6.23}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   m_Points:
-  - {x: -8.632477, y: 3.0677602}
-  - {x: -5.0297184, y: 3.0456045}
-  - {x: -0.9561372, y: 1.7455246}
-  - {x: 9.396053, y: 0}
-  m_AdjacentStartPoint: {x: 0, y: 0}
-  m_AdjacentEndPoint: {x: 0, y: 0}
-  m_UseAdjacentStartPoint: 0
-  m_UseAdjacentEndPoint: 0
+    m_Paths:
+    - - {x: -1.0601903, y: 1.6150494}
+      - {x: -4.927878, y: 3.1495614}
+      - {x: -8.983421, y: 3.0140848}
+      - {x: -9.354097, y: 1.2956964}
+      - {x: -3.7261226, y: -2.881727}
+      - {x: 0.5328407, y: -2.6535842}
+      - {x: 3.5370889, y: -3.1487918}
+      - {x: 9.0546055, y: -0.15989694}
+      - {x: 5.1246157, y: 0.88087475}
+  m_UseDelaunayMesh: 0

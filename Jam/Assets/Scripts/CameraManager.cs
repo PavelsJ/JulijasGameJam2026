@@ -31,11 +31,11 @@ public class CameraManager : MonoBehaviour
         }
     }
     
-    private void LateUpdate()
-    {
-        float angle = Mathf.SmoothDampAngle(virtualCamera.eulerAngles.z, targetAngle, ref rotationVelocity, rotationSmoothTime);
-        virtualCamera.rotation = Quaternion.Euler(0, 0, angle);
-    }
+    // private void LateUpdate()
+    // {
+    //     float angle = Mathf.SmoothDampAngle(virtualCamera.eulerAngles.z, targetAngle, ref rotationVelocity, rotationSmoothTime);
+    //     virtualCamera.rotation = Quaternion.Euler(0, 0, angle);
+    // }
     
     public void RotateToGravity(Vector2 gravity)
     {
