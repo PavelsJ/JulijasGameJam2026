@@ -74,8 +74,8 @@ public class PlayerBase : MonoBehaviour
         
         Movement.ApplyBoost(hitDirection, knockbackMultiplier);
     }
-    
-    public void HandleDefeat()
+
+    private void HandleDefeat()
     {
         isDead = true;
         isActive = false;
